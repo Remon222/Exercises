@@ -23,10 +23,11 @@ jobs:
           command: |
             # install the dependencies needed for your playbook
             apk add --update ansible 
+           
       - run:
           name: Configure server
           command: |
-            ansible-playbook main-remote.yml
+            ansible-playbook -i inventory.txt main-remote.yml
 
 workflows:
   # Name the workflow "welcome"
