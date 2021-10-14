@@ -9,26 +9,26 @@ orbs:
 # Orchestrate or schedule a set of jobs
 
 jobs:
-  create_infrastructure: 
+    configure_infrastructure: 
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints: ["36:14:e0:53:18:16:83:27:83:59:71:7f:23:10:f5:ae"] # You can get this ID in the section where you registered the SSH Key
       - run:
-          name: Create Cloudformation Stack
+          name: Install dependencies
           command: |
-            aws cloudformation deploy \
-              --template-file template.yml \
-              --stack-name myStack \
-              --region us-east-1
-      # Fail the job intentionally to simulate an error.
-      # Uncomment the line below if you want to fail the current step
-      # - run: return 1
-      # - destroy_environment
+            # install the dependencies needed for your playbook
+            apk add --update ansible 
+      - run:
+          name: Configure server
+          command: |
+            ansible-playbook -i inventory.txt main-remote.yml
 
 workflows:
   # Name the workflow "welcome"
   my_workflow:
     # Run the welcome/run job in its own container
     jobs:
-      - create_infrastructure
+      - configure_infrastructure
